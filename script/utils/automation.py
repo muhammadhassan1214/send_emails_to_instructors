@@ -3,8 +3,8 @@ import csv
 import time
 
 from dotenv import load_dotenv
-from static import Locators as Sl
-from util import (
+from ..utils.static import Locators as Sl
+from ..utils.util import (
     click_element, input_element,move_to_element,
     safe_navigate_to_url, check_element_exists
 )
