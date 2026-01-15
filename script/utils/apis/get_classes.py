@@ -1,7 +1,7 @@
 import json
 import requests
 from datetime import datetime, date, time
-from script.utils.static import ApiEndpoints
+from ..static import ApiEndpoints
 
 
 def extract_non_empty_classes(response: dict) -> tuple[bool, list[dict]]:

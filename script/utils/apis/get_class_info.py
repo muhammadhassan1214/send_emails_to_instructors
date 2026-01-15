@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from script.utils.static import ApiEndpoints
+from ..static import ApiEndpoints
 
 
 def extract_class_details(response: dict) -> dict:

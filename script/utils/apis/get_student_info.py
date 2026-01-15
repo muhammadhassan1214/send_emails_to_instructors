@@ -1,5 +1,5 @@
 import requests
-from script.utils.static import ApiEndpoints
+from ..static import ApiEndpoints
 
 
 def extract_student_contact_info(response: dict) -> list:
