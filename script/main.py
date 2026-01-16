@@ -114,7 +114,8 @@ def main():
         print(f"An error occurred in main: {e}")
 
     finally:
-        driver.quit()
+        if driver:
+            driver.quit()
 
 
 if __name__ == "__main__":
