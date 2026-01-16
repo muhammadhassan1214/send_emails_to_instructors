@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from utils.apis.get_classes import get_classes
 from utils.apis.get_class_info import get_class_details
-from utils.apis.get_student_info import get_students_in_class
+from utils.apis.get_instructor_info import get_instructor_email
 
 from utils.mail_sender.email_sender import send_email
 from utils.mail_sender.email_generator import generate_email
@@ -72,19 +72,23 @@ def main():
             if classes:
                 print(f"Found {len(classes)} classes with enrolled students.")
                 for cls in classes:
-                    classId = cls.get("classId")
-                    with open(done_file_path, "r") as f:
-                        done_classes = f.read().splitlines()
+                    classId = str(cls.get("classId")).strip()  # Convert to string and strip whitespace
+                    try:
+                        with open(done_file_path, "r", encoding='utf-8') as f:
+                            done_classes = [line.strip() for line in f.read().splitlines() if line.strip()]
+                    except FileNotFoundError:
+                        done_classes = []
                     if classId in done_classes:
                         print(f"Skipping already processed class {classId}")
                         continue
                     instructor_id = cls.get("instructorId")
                     instructor_name = cls.get("instructorName")
                     instructor_email = get_email_by_id(instructor_id)
-                    class_details = get_class_details(classId, jwt_token)
-                    students = get_students_in_class(classId, jwt_token)
+                    if not instructor_email:
+                        instructor_email = get_instructor_email(instructor_id, jwt_token)
+                    class_details, students = get_class_details(classId, jwt_token)
                     email_html = generate_email(instructor_name, students, class_details)
-                    if instructor_email:
+                    if class_details and students and instructor_email:
                         print(f"Sending email to {instructor_email} for class {classId}")
                         send_email(instructor_email, instructor_name, email_html)
                         send_email(os.getenv('NATHAN_EMAIL'), instructor_name, email_html)

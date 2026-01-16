@@ -28,7 +28,7 @@ def extract_non_empty_classes(response: dict) -> tuple[bool, list[dict]]:
             "instructorName": instructor.get("instructorName", "")
         })
 
-    return (True if is_last == 'true' else False), results
+    return is_last, results
 
 
 def get_today_and_year_end():
@@ -82,6 +82,7 @@ def get_classes(page_number: int, jwt_token: str):
 
     response = requests.post(url, headers=headers, data=payload)
     if response.status_code == 200:
+        print(response.json())
         return extract_non_empty_classes(response.json())
     else:
         print(f"Failed to get classes on page {page_number}: {response.status_code}")

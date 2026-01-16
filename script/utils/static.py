@@ -22,6 +22,7 @@ class ApiEndpoints:
     GET_CLASS_DETAILS = lambda x: f"{BASE_URL}/classes/{x}"
     GET_CLASSES = lambda x: f"{BASE_URL}/getClasses?size=100&page={x}&sort=startDateTime,desc"
     GET_CLASS_STUDENTS = lambda x: f"{BASE_URL}/classes/{x}/students?page=1&sort=firstName,asc&size=10&enrollmentStatus=ENROLLED&status=IN_PROGRESS"
+    GET_INSTRUCTOR_INFO = lambda x: f"https://atlas-api-gateway.heart.org/orgManagement/v1/organisation/alignments?page=1&nameOrEmailOrInstructorId={x}&roleId=17&roleName=INSTRUCTOR&parentId=18260&expiryStatus=ACTIVE&sort=lastName,asc&size=10"
 
     def get_headers(self: str) -> dict:
         headers = {

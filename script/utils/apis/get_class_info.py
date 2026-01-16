@@ -41,14 +41,65 @@ def extract_class_details(response: dict) -> dict:
         "location": location
     }
 
+def extract_student_contact_info(response: dict) -> list:
+    results = []
+    students = (
+        response
+        .get("data", {})
+        .get("students", {})
+        .get("items", [])
+    )
+    for student in students:
+        results.append({
+            "name": f'{student.get("firstName", "")} {student.get("lastName", "")}',
+            "email": student.get("emailId", ""),
+            "phone": student.get("phoneNumber", "")
+        })
 
-def get_class_details(class_id: str, jwt_token: str) -> dict:
-    url = ApiEndpoints.GET_CLASS_DETAILS(class_id)
+    return results
+
+
+# validate responses
+def responses_are_valid(class_response, students_response) -> bool:
+    if class_response.status_code != 200:
+        print(f"Failed to get class details: {class_response.status_code}")
+        return False
+    if students_response.status_code != 200:
+        print(f"Failed to get students details: {students_response.status_code}")
+        return False
+    return True
+
+
+# validate output data from responses
+def extracted_data_is_valid(class_info: dict, student_info: list) -> bool:
+    if class_info['date'] == "" or class_info['location'] == "":
+        print("Class details extraction returned incomplete data.")
+        return False
+    for student in student_info:
+        if student['name'] == "" or student['email'] == "":
+            print(f"Student contact info extraction returned incomplete data.")
+            return False
+    return True
+
+
+def get_class_details(class_id: str, jwt_token: str):
+    class_url = ApiEndpoints.GET_CLASS_DETAILS(class_id)
+    students_url = ApiEndpoints.GET_CLASS_STUDENTS(class_id)
     headers = ApiEndpoints.get_headers(jwt_token)
-    response = requests.get(url, headers=headers)
-    print(F'Request made for fetching class details for class-ID {class_id}')
-    if response.status_code == 200:
-        return extract_class_details(response.json())
+
+    class_response = requests.get(class_url, headers=headers)
+    print(f'Request made for fetching class details for class-ID {class_id}')
+    students_response = requests.get(students_url, headers=headers)
+    print(f'Request made for fetching students details for class-ID {class_id}')
+
+    if responses_are_valid(class_response, students_response):
+        class_info = extract_class_details(class_response.json())
+        student_info = extract_student_contact_info(students_response.json())
+
+        if extracted_data_is_valid(class_info, student_info):
+            return class_info, student_info
+        else:
+            return {}, []
     else:
-        print(f"Failed to get class details for class {class_id}: {response.status_code}")
-        return {}
+        print(f"Failed to get class details for class {class_id}: {students_response.status_code}")
+        return {}, []
