@@ -68,6 +68,9 @@ def main():
         login(driver)
         navigate_to_class_listings(driver)
         jwt_token = capture_jwt_token(driver)
+        if driver:
+            print("JWT token captured successfully.")
+            driver.quit()
         while True:
             islast_page, classes = get_classes(page_number, jwt_token)
             if classes:
