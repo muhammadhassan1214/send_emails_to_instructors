@@ -82,7 +82,6 @@ def get_classes(page_number: int, jwt_token: str):
 
     response = requests.post(url, headers=headers, data=payload)
     if response.status_code == 200:
-        print(response.json())
         return extract_non_empty_classes(response.json())
     else:
         print(f"Failed to get classes on page {page_number}: {response.status_code}")

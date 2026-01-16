@@ -25,4 +25,3 @@ def get_instructor_email(instructor_id: str, jwt_token: str):
         print(f"Failed to get instructor email: {response.status_code}")
         return None
     return extract_email_from_response(response.json())
-

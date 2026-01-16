@@ -62,7 +62,7 @@ def run_every_12_hours():
 
 def main():
     page_number = 0
-    driver = get_undetected_driver()
+    driver = get_undetected_driver(headless=True)
     try:
         login(driver)
         navigate_to_class_listings(driver)
@@ -72,7 +72,7 @@ def main():
             if classes:
                 print(f"Found {len(classes)} classes with enrolled students.")
                 for cls in classes:
-                    classId = str(cls.get("classId")).strip()  # Convert to string and strip whitespace
+                    classId = str(cls.get("classId")).strip()
                     try:
                         with open(done_file_path, "r", encoding='utf-8') as f:
                             done_classes = [line.strip() for line in f.read().splitlines() if line.strip()]
