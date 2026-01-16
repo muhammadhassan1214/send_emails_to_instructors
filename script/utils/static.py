@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 
 BASE_URL = "https://atlas-api-gateway.heart.org/classManagement/v2"
+BASE_URL_2 = "https://atlas-api-gateway.heart.org/orgManagement/v1/organisation"
 
 class Locators:
     # Login Page Locators
@@ -22,7 +23,9 @@ class ApiEndpoints:
     GET_CLASS_DETAILS = lambda x: f"{BASE_URL}/classes/{x}"
     GET_CLASSES = lambda x: f"{BASE_URL}/getClasses?size=100&page={x}&sort=startDateTime,desc"
     GET_CLASS_STUDENTS = lambda x: f"{BASE_URL}/classes/{x}/students?page=1&sort=firstName,asc&size=10&enrollmentStatus=ENROLLED&status=IN_PROGRESS"
-    GET_INSTRUCTOR_INFO = lambda x: f"https://atlas-api-gateway.heart.org/orgManagement/v1/organisation/alignments?page=1&nameOrEmailOrInstructorId={x}&roleId=17&roleName=INSTRUCTOR&parentId=18260&expiryStatus=ACTIVE&sort=lastName,asc&size=10"
+    GET_INSTRUCTOR_INFO = lambda x: f"{BASE_URL_2}/alignments?page=1&nameOrEmailOrInstructorId={x}&roleId=17&roleName=INSTRUCTOR&parentId=18260&expiryStatus=ACTIVE&sort=lastName,asc&size=10"
+    GET_COORDINATOR_INFO = lambda x, y: f"{BASE_URL_2}?page=1&sort=name,asc&size=10&status=ACTIVE&orgCodeOrName={x}&orgType={y}&all=true&parentOrgCodeOrName=KY21007&publicAccess=false"
+
 
     def get_headers(self: str) -> dict:
         headers = {

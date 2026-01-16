@@ -7,14 +7,15 @@ from dotenv import load_dotenv
 from utils.apis.get_classes import get_classes
 from utils.apis.get_class_info import get_class_details
 from utils.apis.get_instructor_info import get_instructor_email
+from utils.apis.get_coordinator_info import get_coordinator_email
 
 from utils.mail_sender.email_sender import send_email
 from utils.mail_sender.email_generator import generate_email
 
 from utils.util import get_undetected_driver
 from utils.automation import (
-    capture_jwt_token, get_email_by_id,
-    login, navigate_to_class_listings
+    capture_jwt_token, login,
+    navigate_to_class_listings
 )
 
 
@@ -83,15 +84,16 @@ def main():
                         continue
                     instructor_id = cls.get("instructorId")
                     instructor_name = cls.get("instructorName")
-                    instructor_email = get_email_by_id(instructor_id)
-                    if not instructor_email:
-                        instructor_email = get_instructor_email(instructor_id, jwt_token)
+                    instructor_email, org_type, org_code = get_instructor_email(instructor_id, jwt_token)
                     class_details, students = get_class_details(classId, jwt_token)
+                    coordinator_email = get_coordinator_email(org_type, org_code, jwt_token)
                     email_html = generate_email(instructor_name, students, class_details)
                     if class_details and students and instructor_email:
                         print(f"Sending email to {instructor_email} for class {classId}")
                         send_email(instructor_email, instructor_name, email_html)
                         send_email(os.getenv('NATHAN_EMAIL'), instructor_name, email_html)
+                        if coordinator_email:
+                            send_email(coordinator_email, instructor_name, email_html)
                     else:
                         print(f"No email found for instructor ID {instructor_id}")
                     with open(done_file_path, "a", encoding='utf-8') as f:

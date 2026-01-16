@@ -7,8 +7,10 @@ def extract_email_from_response(response_data):
         items = response_data.get("data", {}).get("items", [])
         for item in items:
             email = item.get("email")
+            org_type = item.get("orgType")
+            org_code = item.get("orgCode")
             if email:
-                return email
+                return email, org_type, org_code
         return None
 
     except AttributeError:
