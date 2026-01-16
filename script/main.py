@@ -113,10 +113,6 @@ def main():
     except Exception as e:
         print(f"An error occurred in main: {e}")
 
-    finally:
-        if driver:
-            driver.quit()
-
 
 if __name__ == "__main__":
     run_every_12_hours()
