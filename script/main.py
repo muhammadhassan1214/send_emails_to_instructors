@@ -1,6 +1,7 @@
 import os
 import time
 import random
+from datetime import datetime
 from dotenv import load_dotenv
 
 from utils.apis.get_classes import get_classes
@@ -11,7 +12,6 @@ from utils.mail_sender.email_sender import send_email
 from utils.mail_sender.email_generator import generate_email
 
 from utils.util import get_undetected_driver
-from utils.scheduler import schedule_morning_and_night
 from utils.automation import (
     capture_jwt_token, get_email_by_id,
     login, navigate_to_class_listings
@@ -19,7 +19,46 @@ from utils.automation import (
 
 
 load_dotenv()
+SCHEDULE_INTERVAL_SECONDS = 12 * 60 * 60
 done_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils", "data", "done_classes.txt")
+
+
+def run_every_12_hours():
+    print("Starting scheduled automation (runs every 12 hours)")
+    run_count = 0
+
+    while True:
+        run_count += 1
+        start = time.time()
+
+        print(f"\n{'=' * 50}")
+        print(f"SCHEDULED RUN #{run_count}")
+        print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"{'=' * 50}")
+
+        try:
+            main()
+        except Exception as e:
+            print(f"Unhandled error in scheduled run #{run_count}: {e}")
+
+        # --- Timing Logic ---
+        elapsed = time.time() - start
+        remaining = SCHEDULE_INTERVAL_SECONDS - elapsed
+
+        if remaining > 0:
+            next_run_timestamp = time.time() + remaining
+            next_run_time = datetime.fromtimestamp(next_run_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+            print(f"Run #{run_count} completed in {elapsed:.1f}s")
+            print(f"Next run scheduled for: {next_run_time}")
+
+            # Converted log to show Hours instead of Minutes for clarity
+            print(f"Waiting {remaining / 3600:.2f} hours...")
+
+            time.sleep(remaining)
+        else:
+            print(f"Run #{run_count} took {elapsed:.1f}s (>= 12 hours). Starting next run immediately.")
+            
 
 def main():
     page_number = 0
@@ -70,4 +109,4 @@ def main():
 
 
 if __name__ == "__main__":
-    schedule_morning_and_night(main)
+    run_every_12_hours()
